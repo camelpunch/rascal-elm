@@ -1,8 +1,9 @@
 module Main exposing (..)
 
-import Html exposing (Html, text)
 import Html.App
 import Keyboard
+import View exposing (view)
+import Model exposing (Model, Point, Key(..))
 
 
 main : Program Never
@@ -15,40 +16,16 @@ main =
         }
 
 
-
--- MODEL
-
-
-type alias Model =
-    { board : List Int
-    , player : Point
-    }
-
-
-type alias Point =
-    { x : Int
-    , y : Int
-    }
-
-
-type Key
-    = ArrowLeft
-    | ArrowRight
-    | ArrowUp
-    | ArrowDown
-    | Unknown
+init : ( Model, Cmd Msg )
+init =
+    ( model, Cmd.none )
 
 
 model : Model
 model =
-    { board = [ 20, 20 ]
+    { board = { x = 20, y = 20 }
     , player = { x = 5, y = 5 }
     }
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( model, Cmd.none )
 
 
 
@@ -116,15 +93,6 @@ keyFromCode keyCode =
 
         _ ->
             Unknown
-
-
-
--- VIEW
-
-
-view : Model -> Html msg
-view model =
-    text (toString model)
 
 
 
