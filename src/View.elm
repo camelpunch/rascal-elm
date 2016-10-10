@@ -1,7 +1,9 @@
 module View exposing (view)
 
 import Html exposing (Html, text, div, table, tr, td)
+import Html.CssHelpers
 import Model exposing (Model)
+import SharedStyles
 
 
 type Piece
@@ -10,13 +12,15 @@ type Piece
     | EmptySpace
 
 
+{ id, class, classList } =
+    Html.CssHelpers.withNamespace SharedStyles.rascalNamespace
 view : Model -> Html msg
 view model =
     let
         width =
             model.board.x
     in
-        table []
+        table [ id SharedStyles.Page ]
             (List.map (row model) [0..width])
 
 
