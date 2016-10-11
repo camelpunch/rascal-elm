@@ -40,7 +40,11 @@ keyDown keyCode model =
 
 move : Int -> Int -> Model -> Model
 move x y model =
-    { model | player = movePoint x y model.player }
+    let
+        candidate =
+            movePoint x y model.player
+    in
+        { model | player = candidate }
 
 
 movePoint : Int -> Int -> Point -> Point
