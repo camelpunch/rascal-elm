@@ -23,6 +23,6 @@ init =
 
 model : Model
 model =
-    { board = { x = 20, y = 20 }
+    { board = ( 30, 20 )
     , player = { x = 5, y = 5 }
     }

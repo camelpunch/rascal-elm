@@ -17,11 +17,11 @@ type Piece
 view : Model -> Html msg
 view model =
     let
-        width =
-            model.board.x
+        ( width, height ) =
+            model.board
     in
         table [ id SharedStyles.Page ]
-            (List.map (row model) [0..width])
+            (List.map (row model) [0..height])
 
 
 brick : Int -> Html msg
@@ -33,18 +33,21 @@ brick x =
 row : Model -> Int -> Html msg
 row model y =
     let
-        columnCount =
-            model.board.y
+        ( width, height ) =
+            model.board
     in
         tr []
-            (List.map (\x -> cell x y model) [0..columnCount])
+            (List.map (\x -> cell x y model) [0..width])
 
 
 cell : Int -> Int -> Model -> Html msg
 cell x y model =
     let
+        ( width, height ) =
+            model.board
+
         char =
-            if x == 0 || x == model.board.x || y == 0 || y == model.board.y then
+            if x == 0 || x == width || y == 0 || y == height then
                 renderPiece Brick
             else if model.player.x == x && model.player.y == y then
                 renderPiece Player

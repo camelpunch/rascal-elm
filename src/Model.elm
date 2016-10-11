@@ -1,11 +1,8 @@
--- MODEL
-
-
 module Model exposing (..)
 
 
 type alias Model =
-    { board : Point
+    { board : Board
     , player : Point
     }
 
@@ -14,6 +11,10 @@ type alias Point =
     { x : Int
     , y : Int
     }
+
+
+type alias Board =
+    ( Int, Int )
 
 
 type Key
