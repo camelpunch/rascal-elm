@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Keyboard
-import Model exposing (Model, Point, Key(..), Piece(..))
+import Model exposing (Model, Point, Vector, Key(..), Piece(..))
 
 
 type Msg
@@ -23,33 +23,33 @@ keyDown : Keyboard.KeyCode -> Model -> Model
 keyDown keyCode model =
     case keyFromCode keyCode of
         ArrowLeft ->
-            move -1 0 model
+            move { x = -1, y = 0 } model
 
         ArrowRight ->
-            move 1 0 model
+            move { x = 1, y = 0 } model
 
         ArrowUp ->
-            move 0 -1 model
+            move { x = 0, y = -1 } model
 
         ArrowDown ->
-            move 0 1 model
+            move { x = 0, y = 1 } model
 
         Unknown ->
             model
 
 
-move : Int -> Int -> Model -> Model
-move x y model =
+move : Vector -> Model -> Model
+move vec model =
     let
         candidate =
-            movePoint x y model.player
+            movePoint vec model.player
     in
         { model | player = candidate }
 
 
-movePoint : Int -> Int -> Point -> Point
-movePoint x y point =
-    { point | x = point.x + x, y = point.y + y }
+movePoint : Vector -> Point -> Point
+movePoint vec point =
+    { point | x = point.x + vec.x, y = point.y + vec.y }
 
 
 keyFromCode : Int -> Key

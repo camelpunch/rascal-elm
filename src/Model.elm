@@ -13,6 +13,10 @@ type alias Point =
     }
 
 
+type alias Vector =
+    Point
+
+
 type Piece
     = Player
     | Brick
