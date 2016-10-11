@@ -2,14 +2,8 @@ module View exposing (view)
 
 import Html exposing (Html, text, div, table, tr, td)
 import Html.CssHelpers
-import Model exposing (Model)
+import Model exposing (Model, Point, Piece(..), cell)
 import SharedStyles
-
-
-type Piece
-    = Player
-    | Brick
-    | EmptySpace
 
 
 { id, class, classList } =
@@ -37,25 +31,7 @@ row model y =
             model.board
     in
         tr []
-            (List.map (\x -> cell x y model) [0..width])
-
-
-cell : Int -> Int -> Model -> Html msg
-cell x y model =
-    let
-        ( width, height ) =
-            model.board
-
-        char =
-            if x == 0 || x == width || y == 0 || y == height then
-                renderPiece Brick
-            else if model.player.x == x && model.player.y == y then
-                renderPiece Player
-            else
-                renderPiece EmptySpace
-    in
-        td []
-            [ text char ]
+            (List.map (\x -> td [] [ text (renderPiece (cell { x = x, y = y } model)) ]) [0..width])
 
 
 renderPiece : Piece -> String

@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Keyboard
-import Model exposing (Model, Point, Key(..))
+import Model exposing (Model, Point, Key(..), Piece(..))
 
 
 type Msg
