@@ -1,4 +1,4 @@
-module Update exposing (Msg(..), subscriptions, update, modelAfterMovement, keyFromCode)
+module Update exposing (Msg(..), subscriptions, update, modelAfterMovement, keyFromCode, cellOccupant)
 
 import Keyboard
 import Model exposing (Model, Point, Key(..), Action(..), Occupant(..), Neighbours)

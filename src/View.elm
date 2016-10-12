@@ -2,7 +2,8 @@ module View exposing (view)
 
 import Html exposing (Html, text, div, table, tr, td)
 import Html.CssHelpers
-import Model exposing (Model, Point, Occupant(..), cellOccupant)
+import Model exposing (Model, Point, Occupant(..))
+import Update exposing (cellOccupant)
 import SharedStyles
 
 
