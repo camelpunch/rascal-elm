@@ -7,24 +7,33 @@ type alias Model =
     }
 
 
+type alias Board =
+    ( Int, Int )
+
+
 type alias Point =
     { x : Int
     , y : Int
     }
 
 
-type alias Vector =
-    Point
-
-
-type Piece
+type Occupant
     = Player
     | Brick
     | EmptySpace
 
 
-type alias Board =
-    ( Int, Int )
+type alias Neighbours =
+    { left : Occupant
+    , right : Occupant
+    , up : Occupant
+    , down : Occupant
+    }
+
+
+type Action
+    = Occupy
+    | DoNothing
 
 
 type Key
@@ -33,17 +42,3 @@ type Key
     | ArrowUp
     | ArrowDown
     | Unknown
-
-
-cell : Point -> Model -> Piece
-cell { x, y } model =
-    let
-        ( width, height ) =
-            model.board
-    in
-        if x == 0 || x == width || y == 0 || y == height then
-            Brick
-        else if model.player.x == x && model.player.y == y then
-            Player
-        else
-            EmptySpace
