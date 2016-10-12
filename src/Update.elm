@@ -1,4 +1,4 @@
-module Update exposing (..)
+module Update exposing (Msg, subscriptions, update)
 
 import Keyboard
 import Model exposing (Model, Point, Vector, Key(..), Piece(..))
@@ -7,6 +7,14 @@ import Model exposing (Model, Point, Vector, Key(..), Piece(..))
 type Msg
     = KeyDown Keyboard.KeyCode
     | KeyUp Keyboard.KeyCode
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Keyboard.downs KeyDown
+        , Keyboard.ups KeyUp
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -69,15 +77,3 @@ keyFromCode keyCode =
 
         _ ->
             Unknown
-
-
-
--- SUBS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Keyboard.downs KeyDown
-        , Keyboard.ups KeyUp
-        ]
