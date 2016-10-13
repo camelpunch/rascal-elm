@@ -1,4 +1,4 @@
-module Update exposing (Msg(..), subscriptions, update, cellOccupant, processKey)
+module Update exposing (Msg(..), subscriptions, update, cellOccupant, processRequest)
 
 import Keyboard
 import Keys
@@ -22,17 +22,17 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         KeyDown keyCode ->
-            ( processKey keyCode model, Cmd.none )
+            ( processRequest (Keys.requestFromKeyCode keyCode) model, Cmd.none )
 
         KeyUp keyCode ->
             ( model, Cmd.none )
 
 
-processKey : Int -> Model -> Model
-processKey keyCode model =
+processRequest : Maybe Request -> Model -> Model
+processRequest request model =
     let
         ( action, newPosition ) =
-            case Keys.requestFromKeyCode keyCode of
+            case request of
                 Just request ->
                     requestedAction
                         request

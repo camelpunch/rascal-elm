@@ -1,12 +1,11 @@
 module Tests exposing (..)
 
-import Test exposing (..)
-import Fuzz exposing (..)
-import Model exposing (Model)
-import Update
-import Keys
 import Expect
+import Fuzz exposing (..)
+import Model exposing (Model, Request(..))
 import String
+import Test exposing (..)
+import Update
 
 
 all : Test
@@ -48,25 +47,37 @@ model =
     }
 
 
-modelAfterMovements : List Model.Key -> Model -> Model
-modelAfterMovements keys beforeState =
-    List.foldl moveWithKey beforeState keys
-
-
-moveWithKey : Model.Key -> Model -> Model
-moveWithKey key state =
-    Update.processKey key state
-
-
-getPlayerX : Model -> List Model.Key -> Int
-getPlayerX beforeState keys =
+getPlayerX : Model -> List Request -> Int
+getPlayerX beforeState requests =
     let
         afterState =
-            modelAfterMovements keys beforeState
+            modelAfterMovements requests beforeState
     in
         afterState.player.x
 
 
-movement : Fuzzer Model.Key
+modelAfterMovements : List Request -> Model -> Model
+modelAfterMovements requests beforeState =
+    List.foldl dispatchRequest beforeState requests
+
+
+dispatchRequest : Request -> Model -> Model
+dispatchRequest request state =
+    Update.processRequest (Just request) state
+
+
+movement : Fuzzer Model.Request
 movement =
-    Fuzz.map Keys.keyFromCode (Fuzz.intRange 37 41)
+    Fuzz.map request (Fuzz.intRange 0 3)
+
+
+request : Int -> Model.Request
+request n =
+    if n == 0 then
+        MoveLeft
+    else if n == 1 then
+        MoveRight
+    else if n == 2 then
+        MoveUp
+    else
+        MoveDown
