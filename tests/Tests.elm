@@ -14,15 +14,29 @@ all =
         ( width, height ) =
             model.board
     in
-        describe "Movement"
-            [ fuzzWith { runs = 500 }
-                (Fuzz.list movement)
-                "Never results in being inside right-hand wall"
-                (getPlayerX model >> Expect.notEqual width)
-            , fuzzWith { runs = 500 }
-                (Fuzz.list movement)
-                "Never results in being inside left-hand wall"
-                (getPlayerX model >> Expect.greaterThan 0)
+        describe "Game"
+            [ describe "Board"
+                [ test "has empty space" <|
+                    \_ ->
+                        Expect.equal
+                            Model.EmptySpace
+                            (Update.cellOccupant { x = 1, y = 1 } model)
+                , test "Player is at expected position" <|
+                    \_ ->
+                        Expect.equal
+                            Model.Player
+                            (Update.cellOccupant model.player model)
+                ]
+            , describe "Movement"
+                [ fuzzWith { runs = 500 }
+                    (Fuzz.list movement)
+                    "Never results in being inside right-hand wall"
+                    (getPlayerX model >> Expect.notEqual width)
+                , fuzzWith { runs = 500 }
+                    (Fuzz.list movement)
+                    "Never results in being inside left-hand wall"
+                    (getPlayerX model >> Expect.greaterThan 0)
+                ]
             ]
 
 
@@ -40,7 +54,7 @@ modelAfterMovements keys beforeState =
 
 moveWithKey : Model.Key -> Model -> Model
 moveWithKey key state =
-    Update.modelAfterMovement key state
+    Update.processKey key state
 
 
 getPlayerX : Model -> List Model.Key -> Int

@@ -1,7 +1,7 @@
-module Update exposing (Msg(..), subscriptions, update, modelAfterMovement, keyFromCode, cellOccupant)
+module Update exposing (Msg(..), subscriptions, update, processKey, keyFromCode, cellOccupant)
 
 import Keyboard
-import Model exposing (Model, Point, Key(..), Action(..), Occupant(..), Neighbours)
+import Model exposing (Model, Point, Request(..), Key(..), Action(..), Occupant(..), Neighbours)
 
 
 type Msg
@@ -29,26 +29,7 @@ update msg model =
 
 keyDown : Keyboard.KeyCode -> Model -> Model
 keyDown keyCode model =
-    modelAfterMovement (keyFromCode keyCode) model
-
-
-modelAfterMovement : Model.Key -> Model -> Model
-modelAfterMovement key model =
-    case actionFromKey key model.player (neighbours model.player model) of
-        ( Occupy, newPosition ) ->
-            { model | player = newPosition }
-
-        ( DoNothing, newPosition ) ->
-            model
-
-
-neighbours : Point -> Model -> Model.Neighbours
-neighbours actor model =
-    { left = cellOccupant { actor | x = actor.x - 1 } model
-    , right = cellOccupant { actor | x = actor.x + 1 } model
-    , up = cellOccupant { actor | y = actor.y - 1 } model
-    , down = cellOccupant { actor | y = actor.y + 1 } model
-    }
+    processKey (keyFromCode keyCode) model
 
 
 keyFromCode : Int -> Key
@@ -70,47 +51,102 @@ keyFromCode keyCode =
             Unknown
 
 
-actionFromKey : Key -> Point -> Neighbours -> ( Action, Point )
-actionFromKey key point neighbours =
-    case ( key, neighbours.left, neighbours.right, neighbours.up, neighbours.down ) of
-        ( ArrowLeft, EmptySpace, _, _, _ ) ->
+processKey : Model.Key -> Model -> Model
+processKey key model =
+    let
+        getAction =
+            \direction ->
+                actionFromRequest
+                    direction
+                    model.player
+                    (neighbours model.player model)
+
+        ( action, newPosition ) =
+            case key of
+                ArrowLeft ->
+                    getAction MoveLeft
+
+                ArrowRight ->
+                    getAction MoveRight
+
+                ArrowUp ->
+                    getAction MoveUp
+
+                ArrowDown ->
+                    getAction MoveDown
+
+                Unknown ->
+                    ( DoNothing, model.player )
+    in
+        case action of
+            Occupy ->
+                { model | player = newPosition }
+
+            DoNothing ->
+                model
+
+
+actionFromRequest : Request -> Point -> Neighbours -> ( Action, Point )
+actionFromRequest request point neighbours =
+    case ( request, neighbours.left, neighbours.right, neighbours.up, neighbours.down ) of
+        ( MoveLeft, EmptySpace, _, _, _ ) ->
             ( Occupy, leftOf point )
 
-        ( ArrowRight, _, EmptySpace, _, _ ) ->
+        ( MoveRight, _, EmptySpace, _, _ ) ->
             ( Occupy, rightOf point )
 
-        ( ArrowUp, _, _, EmptySpace, _ ) ->
+        ( MoveUp, _, _, EmptySpace, _ ) ->
             ( Occupy, above point )
 
-        ( ArrowDown, _, _, _, EmptySpace ) ->
+        ( MoveDown, _, _, _, EmptySpace ) ->
             ( Occupy, below point )
 
-        ( ArrowLeft, Player, _, _, _ ) ->
+        ( MoveLeft, Player, _, _, _ ) ->
             ( DoNothing, leftOf point )
 
-        ( ArrowRight, _, Player, _, _ ) ->
+        ( MoveRight, _, Player, _, _ ) ->
             ( DoNothing, rightOf point )
 
-        ( ArrowUp, _, _, Player, _ ) ->
+        ( MoveUp, _, _, Player, _ ) ->
             ( DoNothing, above point )
 
-        ( ArrowDown, _, _, _, Player ) ->
+        ( MoveDown, _, _, _, Player ) ->
             ( DoNothing, below point )
 
-        ( ArrowLeft, Brick, _, _, _ ) ->
+        ( MoveLeft, Brick, _, _, _ ) ->
             ( DoNothing, point )
 
-        ( ArrowRight, _, Brick, _, _ ) ->
+        ( MoveRight, _, Brick, _, _ ) ->
             ( DoNothing, point )
 
-        ( ArrowUp, _, _, Brick, _ ) ->
+        ( MoveUp, _, _, Brick, _ ) ->
             ( DoNothing, point )
 
-        ( ArrowDown, _, _, _, Brick ) ->
+        ( MoveDown, _, _, _, Brick ) ->
             ( DoNothing, point )
 
-        ( Unknown, _, _, _, _ ) ->
-            ( DoNothing, point )
+
+neighbours : Point -> Model -> Neighbours
+neighbours actor model =
+    { left = cellOccupant (leftOf actor) model
+    , right = cellOccupant (rightOf actor) model
+    , up = cellOccupant (above actor) model
+    , down = cellOccupant (below actor) model
+    }
+
+
+cellOccupant : Point -> Model -> Occupant
+cellOccupant { x, y } { board, player } =
+    let
+        ( width, height ) =
+            board
+    in
+        if x == 0 || x == width || y == 0 || y == height then
+            Brick
+        else if x == player.x && y == player.y then
+            Player
+        else
+            EmptySpace
 
 
 above : Point -> Point
@@ -131,17 +167,3 @@ leftOf point =
 rightOf : Point -> Point
 rightOf point =
     { point | x = point.x + 1 }
-
-
-cellOccupant : Point -> Model -> Occupant
-cellOccupant { x, y } model =
-    let
-        ( width, height ) =
-            model.board
-    in
-        if x == 0 || x == width || y == 0 || y == height then
-            Brick
-        else if model.player.x == x && model.player.y == y then
-            Player
-        else
-            EmptySpace

@@ -36,6 +36,13 @@ type Action
     | DoNothing
 
 
+type Request
+    = MoveLeft
+    | MoveRight
+    | MoveUp
+    | MoveDown
+
+
 type Key
     = ArrowLeft
     | ArrowRight
