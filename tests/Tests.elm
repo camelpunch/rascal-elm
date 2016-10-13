@@ -28,16 +28,27 @@ all =
                             (Update.cellOccupant model.player model)
                 ]
             , describe "Movement"
-                [ fuzzWith { runs = 500 }
+                [ fuzzWith { runs = 10000 }
                     (Fuzz.list movement)
-                    "Never results in being inside right-hand wall"
-                    (getPlayerX model >> Expect.notEqual width)
-                , fuzzWith { runs = 500 }
-                    (Fuzz.list movement)
-                    "Never results in being inside left-hand wall"
-                    (getPlayerX model >> Expect.greaterThan 0)
+                    "Never results in being inside wall"
+                    (\requests ->
+                        (playerInsideWall requests model)
+                            |> Expect.false "player inside wall"
+                    )
                 ]
             ]
+
+
+playerInsideWall : List Request -> Model -> Bool
+playerInsideWall requests model =
+    let
+        { x, y } =
+            .player (modelAfterMovements requests model)
+
+        ( width, height ) =
+            model.board
+    in
+        x == 0 || x == width || y == 0 || y == height
 
 
 model : Model
@@ -45,15 +56,6 @@ model =
     { board = ( 5, 5 )
     , player = { x = 2, y = 2 }
     }
-
-
-getPlayerX : Model -> List Request -> Int
-getPlayerX beforeState requests =
-    let
-        afterState =
-            modelAfterMovements requests beforeState
-    in
-        afterState.player.x
 
 
 modelAfterMovements : List Request -> Model -> Model

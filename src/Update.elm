@@ -40,14 +40,11 @@ processRequest request model =
                         (neighbours model.player model)
 
                 Nothing ->
-                    ( DoNothing, model.player )
+                    ( Occupy, model.player )
     in
         case action of
             Occupy ->
                 { model | player = newPosition }
-
-            DoNothing ->
-                model
 
 
 requestedAction : Request -> Point -> Neighbours -> ( Action, Point )
@@ -65,29 +62,8 @@ requestedAction request point neighbours =
         ( MoveDown, _, _, _, EmptySpace ) ->
             ( Occupy, below point )
 
-        ( MoveLeft, Player, _, _, _ ) ->
-            ( DoNothing, leftOf point )
-
-        ( MoveRight, _, Player, _, _ ) ->
-            ( DoNothing, rightOf point )
-
-        ( MoveUp, _, _, Player, _ ) ->
-            ( DoNothing, above point )
-
-        ( MoveDown, _, _, _, Player ) ->
-            ( DoNothing, below point )
-
-        ( MoveLeft, Brick, _, _, _ ) ->
-            ( DoNothing, point )
-
-        ( MoveRight, _, Brick, _, _ ) ->
-            ( DoNothing, point )
-
-        ( MoveUp, _, _, Brick, _ ) ->
-            ( DoNothing, point )
-
-        ( MoveDown, _, _, _, Brick ) ->
-            ( DoNothing, point )
+        _ ->
+            ( Occupy, point )
 
 
 neighbours : Point -> Model -> Neighbours

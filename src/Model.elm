@@ -33,7 +33,6 @@ type alias Neighbours =
 
 type Action
     = Occupy
-    | DoNothing
 
 
 type Request
