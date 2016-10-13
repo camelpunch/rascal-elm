@@ -4,6 +4,7 @@ import Test exposing (..)
 import Fuzz exposing (..)
 import Model exposing (Model)
 import Update
+import Keys
 import Expect
 import String
 
@@ -68,4 +69,4 @@ getPlayerX beforeState keys =
 
 movement : Fuzzer Model.Key
 movement =
-    Fuzz.map Update.keyFromCode (Fuzz.intRange 37 41)
+    Fuzz.map Keys.keyFromCode (Fuzz.intRange 37 41)

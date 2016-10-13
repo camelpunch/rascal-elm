@@ -1,9 +1,9 @@
 module Main exposing (..)
 
 import Html.App
-import View exposing (view)
 import Model exposing (Model, Point, Key(..))
 import Update exposing (update, subscriptions)
+import View exposing (view)
 
 
 main : Program Never

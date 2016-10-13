@@ -48,4 +48,8 @@ type Key
     | ArrowRight
     | ArrowUp
     | ArrowDown
+    | H
+    | J
+    | K
+    | L
     | Unknown

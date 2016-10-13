@@ -1,6 +1,7 @@
-module Update exposing (Msg(..), subscriptions, update, processKey, keyFromCode, cellOccupant)
+module Update exposing (Msg(..), subscriptions, update, cellOccupant, processKey)
 
 import Keyboard
+import Keys
 import Model exposing (Model, Point, Request(..), Key(..), Action(..), Occupant(..), Neighbours)
 
 
@@ -21,61 +22,24 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         KeyDown keyCode ->
-            ( keyDown keyCode model, Cmd.none )
+            ( processKey keyCode model, Cmd.none )
 
         KeyUp keyCode ->
             ( model, Cmd.none )
 
 
-keyDown : Keyboard.KeyCode -> Model -> Model
-keyDown keyCode model =
-    processKey (keyFromCode keyCode) model
-
-
-keyFromCode : Int -> Key
-keyFromCode keyCode =
-    case keyCode of
-        37 ->
-            ArrowLeft
-
-        38 ->
-            ArrowUp
-
-        39 ->
-            ArrowRight
-
-        40 ->
-            ArrowDown
-
-        _ ->
-            Unknown
-
-
-processKey : Model.Key -> Model -> Model
-processKey key model =
+processKey : Int -> Model -> Model
+processKey keyCode model =
     let
-        getAction =
-            \direction ->
-                actionFromRequest
-                    direction
-                    model.player
-                    (neighbours model.player model)
-
         ( action, newPosition ) =
-            case key of
-                ArrowLeft ->
-                    getAction MoveLeft
+            case Keys.requestFromKeyCode keyCode of
+                Just request ->
+                    requestedAction
+                        request
+                        model.player
+                        (neighbours model.player model)
 
-                ArrowRight ->
-                    getAction MoveRight
-
-                ArrowUp ->
-                    getAction MoveUp
-
-                ArrowDown ->
-                    getAction MoveDown
-
-                Unknown ->
+                Nothing ->
                     ( DoNothing, model.player )
     in
         case action of
@@ -86,8 +50,8 @@ processKey key model =
                 model
 
 
-actionFromRequest : Request -> Point -> Neighbours -> ( Action, Point )
-actionFromRequest request point neighbours =
+requestedAction : Request -> Point -> Neighbours -> ( Action, Point )
+requestedAction request point neighbours =
     case ( request, neighbours.left, neighbours.right, neighbours.up, neighbours.down ) of
         ( MoveLeft, EmptySpace, _, _, _ ) ->
             ( Occupy, leftOf point )
