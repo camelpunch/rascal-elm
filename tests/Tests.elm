@@ -75,11 +75,15 @@ movement =
 
 request : Int -> Model.Request
 request n =
-    if n == 0 then
-        MoveLeft
-    else if n == 1 then
-        MoveRight
-    else if n == 2 then
-        MoveUp
-    else
-        MoveDown
+    case n of
+        0 ->
+            MoveLeft
+
+        1 ->
+            MoveRight
+
+        2 ->
+            MoveUp
+
+        _ ->
+            MoveDown
