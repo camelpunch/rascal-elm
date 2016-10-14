@@ -7,7 +7,6 @@ import Model exposing (Model, Board, Point, Request(..), Key(..), Action(..), Oc
 
 type Msg
     = KeyDown Keyboard.KeyCode
-    | KeyUp Keyboard.KeyCode
     | NewGame ( Int, Int )
 
 
@@ -21,9 +20,6 @@ update msg model =
     case msg of
         KeyDown keyCode ->
             processRequest (Keys.requestFromKeyCode keyCode) model
-
-        KeyUp keyCode ->
-            ( model, Cmd.none )
 
         NewGame ( x, y ) ->
             ( { model | player = { x = x, y = y } }, Cmd.none )
