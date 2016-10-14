@@ -49,41 +49,47 @@ processRequest request model =
 
 requestedAction : Request -> Point -> Neighbours -> ( Action, Point )
 requestedAction request point neighbours =
-    case ( request, neighbours.left, neighbours.right, neighbours.up, neighbours.down ) of
-        ( MoveLeft, EmptySpace, _, _, _ ) ->
-            ( Occupy, leftOf point )
+    let
+        ( occupant, destination ) =
+            case request of
+                MoveLeft ->
+                    neighbours.left
 
-        ( MoveRight, _, EmptySpace, _, _ ) ->
-            ( Occupy, rightOf point )
+                MoveRight ->
+                    neighbours.right
 
-        ( MoveUp, _, _, EmptySpace, _ ) ->
-            ( Occupy, above point )
+                MoveUp ->
+                    neighbours.up
 
-        ( MoveDown, _, _, _, EmptySpace ) ->
-            ( Occupy, below point )
+                MoveDown ->
+                    neighbours.down
+    in
+        case occupant of
+            EmptySpace ->
+                ( Occupy, destination )
 
-        _ ->
-            ( Occupy, point )
+            _ ->
+                ( Occupy, point )
 
 
 neighbours : Point -> Model -> Neighbours
 neighbours actor model =
-    { left = cellOccupant (leftOf actor) model
-    , right = cellOccupant (rightOf actor) model
-    , up = cellOccupant (above actor) model
-    , down = cellOccupant (below actor) model
+    { left = ( cellOccupant (leftOf actor) model, leftOf actor )
+    , right = ( cellOccupant (rightOf actor) model, rightOf actor )
+    , up = ( cellOccupant (above actor) model, above actor )
+    , down = ( cellOccupant (below actor) model, below actor )
     }
 
 
 cellOccupant : Point -> Model -> Occupant
-cellOccupant { x, y } { board, player } =
+cellOccupant point { board, player } =
     let
         ( width, height ) =
             board
     in
-        if x == 0 || x == width || y == 0 || y == height then
+        if point.x == 0 || point.x == width || point.y == 0 || point.y == height then
             Brick
-        else if x == player.x && y == player.y then
+        else if point == player then
             Player
         else
             EmptySpace

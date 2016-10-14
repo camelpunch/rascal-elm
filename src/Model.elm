@@ -24,10 +24,10 @@ type Occupant
 
 
 type alias Neighbours =
-    { left : Occupant
-    , right : Occupant
-    , up : Occupant
-    , down : Occupant
+    { left : ( Occupant, Point )
+    , right : ( Occupant, Point )
+    , up : ( Occupant, Point )
+    , down : ( Occupant, Point )
     }
 
 
