@@ -15,22 +15,20 @@ all =
             model.board
     in
         describe "Game"
-            [ describe "Board"
-                [ test "has empty space" <|
-                    \_ ->
-                        Expect.equal
-                            Model.EmptySpace
-                            (Update.cellOccupant { x = 1, y = 1 } model)
-                , test "Player is at expected position" <|
-                    \_ ->
-                        Expect.equal
-                            Model.Player
-                            (Update.cellOccupant model.player model)
-                ]
-            , describe "Movement"
+            [ test "board has empty space" <|
+                \_ ->
+                    Expect.equal
+                        Model.EmptySpace
+                        (Update.cellOccupant { x = 1, y = 1 } model)
+            , test "player is at expected position" <|
+                \_ ->
+                    Expect.equal
+                        Model.Player
+                        (Update.cellOccupant model.player model)
+            , describe "movement"
                 [ fuzzWith { runs = 10000 }
                     (Fuzz.list movement)
-                    "Never results in being inside wall"
+                    "never results in being inside wall"
                     (\requests ->
                         (playerInsideWall requests model)
                             |> Expect.false "player inside wall"
