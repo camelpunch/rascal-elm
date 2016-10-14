@@ -23,7 +23,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         KeyDown keyCode ->
-            ( processRequest (Keys.requestFromKeyCode keyCode) model, Cmd.none )
+            processRequest (Keys.requestFromKeyCode keyCode) model
 
         KeyUp keyCode ->
             ( model, Cmd.none )
@@ -32,7 +32,7 @@ update msg model =
             ( { model | player = { x = x, y = y } }, Cmd.none )
 
 
-processRequest : Maybe Request -> Model -> Model
+processRequest : Maybe Request -> Model -> ( Model, Cmd Msg )
 processRequest request model =
     let
         ( action, newPosition ) =
@@ -48,7 +48,7 @@ processRequest request model =
     in
         case action of
             Occupy ->
-                { model | player = newPosition }
+                ( { model | player = newPosition }, Cmd.none )
 
 
 requestedAction : Request -> Point -> Neighbours -> ( Action, Point )

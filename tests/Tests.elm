@@ -63,7 +63,7 @@ modelAfterMovements requests beforeState =
 
 dispatchRequest : Request -> Model -> Model
 dispatchRequest request state =
-    Update.processRequest (Just request) state
+    fst (Update.processRequest (Just request) state)
 
 
 movement : Fuzzer Model.Request
