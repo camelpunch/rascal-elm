@@ -39,6 +39,13 @@ all =
             ]
 
 
+model : Model
+model =
+    { board = ( 5, 5 )
+    , player = { x = 2, y = 2 }
+    }
+
+
 playerInsideWall : List Request -> Model -> Bool
 playerInsideWall requests model =
     let
@@ -49,13 +56,6 @@ playerInsideWall requests model =
             model.board
     in
         x == 0 || x == width || y == 0 || y == height
-
-
-model : Model
-model =
-    { board = ( 5, 5 )
-    , player = { x = 2, y = 2 }
-    }
 
 
 modelAfterMovements : List Request -> Model -> Model
