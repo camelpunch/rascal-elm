@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html.App
 import Model exposing (Model, Point, Key(..))
+import Random
 import Update exposing (update, subscriptions)
 import View exposing (view)
 
@@ -18,7 +19,18 @@ main =
 
 init : ( Model, Cmd Update.Msg )
 init =
-    ( model, Cmd.none )
+    ( model
+    , Random.generate Update.NewGame
+        (let
+            ( width, height ) =
+                model.board
+         in
+            (Random.pair
+                (Random.int 1 (width - 1))
+                (Random.int 1 (height - 1))
+            )
+        )
+    )
 
 
 model : Model

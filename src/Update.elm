@@ -2,12 +2,13 @@ module Update exposing (Msg(..), subscriptions, update, cellOccupant, processReq
 
 import Keyboard
 import Keys
-import Model exposing (Model, Point, Request(..), Key(..), Action(..), Occupant(..), Neighbours)
+import Model exposing (Model, Board, Point, Request(..), Key(..), Action(..), Occupant(..), Neighbours)
 
 
 type Msg
     = KeyDown Keyboard.KeyCode
     | KeyUp Keyboard.KeyCode
+    | NewGame ( Int, Int )
 
 
 subscriptions : Model -> Sub Msg
@@ -26,6 +27,9 @@ update msg model =
 
         KeyUp keyCode ->
             ( model, Cmd.none )
+
+        NewGame ( x, y ) ->
+            ( { model | player = { x = x, y = y } }, Cmd.none )
 
 
 processRequest : Maybe Request -> Model -> Model
