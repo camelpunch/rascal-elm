@@ -2,8 +2,8 @@ module Tests exposing (..)
 
 import Expect
 import Fuzz exposing (..)
-import Model exposing (Model, Request(..))
-import String
+import Model exposing (Model)
+import Request exposing (..)
 import Test exposing (..)
 import Update
 
@@ -23,8 +23,8 @@ all =
             , test "player is at expected position" <|
                 \_ ->
                     Expect.equal
-                        Model.Player
-                        (Update.cellOccupant model.player model)
+                        Model.PlayerTile
+                        (Update.cellOccupant model.player.coords model)
             , describe "movement"
                 [ fuzzWith { runs = 10000 }
                     (Fuzz.list movement)
@@ -40,7 +40,10 @@ all =
 model : Model
 model =
     { board = ( 5, 5 )
-    , player = { x = 2, y = 2 }
+    , player =
+        { coords = { x = 2, y = 2 }
+        , attacking = Nothing
+        }
     }
 
 
@@ -48,7 +51,7 @@ playerInsideWall : List Request -> Model -> Bool
 playerInsideWall requests model =
     let
         { x, y } =
-            .player (modelAfterMovements requests model)
+            (modelAfterMovements requests model).player.coords
 
         ( width, height ) =
             model.board
@@ -66,12 +69,12 @@ dispatchRequest request state =
     fst (Update.processRequest (Just request) state)
 
 
-movement : Fuzzer Model.Request
+movement : Fuzzer Request
 movement =
     Fuzz.map request (Fuzz.intRange 0 3)
 
 
-request : Int -> Model.Request
+request : Int -> Request
 request n =
     case n of
         0 ->

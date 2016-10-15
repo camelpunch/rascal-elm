@@ -1,6 +1,7 @@
 module Keys exposing (requestFromKeyCode)
 
-import Model exposing (Key(..), Model, Point, Request(..))
+import Model exposing (Key(..), Model)
+import Request exposing (..)
 
 
 requestFromKeyCode : Int -> Maybe Request

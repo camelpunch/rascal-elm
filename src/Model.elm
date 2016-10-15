@@ -1,9 +1,12 @@
 module Model exposing (..)
 
+import Player exposing (..)
+import Point exposing (..)
+
 
 type alias Model =
     { board : Board
-    , player : Point
+    , player : Player
     }
 
 
@@ -11,14 +14,8 @@ type alias Board =
     ( Int, Int )
 
 
-type alias Point =
-    { x : Int
-    , y : Int
-    }
-
-
 type Occupant
-    = Player
+    = PlayerTile
     | Brick
     | EmptySpace
 
@@ -33,13 +30,7 @@ type alias Neighbours =
 
 type Action
     = Occupy
-
-
-type Request
-    = MoveLeft
-    | MoveRight
-    | MoveUp
-    | MoveDown
+    | Attack
 
 
 type Key

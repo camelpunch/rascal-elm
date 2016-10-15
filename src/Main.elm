@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html.App
-import Model exposing (Model, Point, Key(..))
+import Model exposing (Model, Key(..))
 import Random
 import Update exposing (update, subscriptions)
 import View exposing (view)
@@ -36,5 +36,8 @@ init =
 model : Model
 model =
     { board = ( 30, 20 )
-    , player = { x = 5, y = 5 }
+    , player =
+        { coords = { x = 5, y = 5 }
+        , attacking = Nothing
+        }
     }

@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Html exposing (Html, text, div, table, tr, td)
 import Html.CssHelpers
-import Model exposing (Model, Point, Occupant(..))
+import Model exposing (Model, Occupant(..))
 import Update exposing (cellOccupant)
 import SharedStyles
 
@@ -48,7 +48,7 @@ column col row model =
 renderPiece : Occupant -> String
 renderPiece piece =
     case piece of
-        Player ->
+        PlayerTile ->
             "@"
 
         Brick ->

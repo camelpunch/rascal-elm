@@ -2,12 +2,17 @@ module Update exposing (Msg(..), subscriptions, update, cellOccupant, processReq
 
 import Keyboard
 import Keys
-import Model exposing (Model, Board, Point, Request(..), Key(..), Action(..), Occupant(..), Neighbours)
+import Model exposing (Model, Board, Key(..), Action(..), Occupant(..), Neighbours)
+import Player exposing (..)
+import Point exposing (..)
+import Random
+import Request exposing (..)
 
 
 type Msg
-    = KeyDown Keyboard.KeyCode
-    | NewGame ( Int, Int )
+    = NewGame ( Int, Int )
+    | KeyDown Keyboard.KeyCode
+    | AttackPower Int
 
 
 subscriptions : Model -> Sub Msg
@@ -21,8 +26,15 @@ update msg model =
         KeyDown keyCode ->
             processRequest (Keys.requestFromKeyCode keyCode) model
 
-        NewGame ( x, y ) ->
-            ( { model | player = { x = x, y = y } }, Cmd.none )
+        NewGame ( playerX, playerY ) ->
+            ( { model | player = (move { x = playerX, y = playerY } model.player) }
+            , Cmd.none
+            )
+
+        AttackPower power ->
+            ( model
+            , Cmd.none
+            )
 
 
 processRequest : Maybe Request -> Model -> ( Model, Cmd Msg )
@@ -33,15 +45,32 @@ processRequest request model =
                 Just request ->
                     requestedAction
                         request
-                        model.player
-                        (neighbours model.player model)
+                        model.player.coords
+                        (neighbours model.player.coords model)
 
                 Nothing ->
-                    ( Occupy, model.player )
+                    ( Occupy, model.player.coords )
     in
         case action of
             Occupy ->
-                ( { model | player = newPosition }, Cmd.none )
+                ( { model | player = (move newPosition model.player) }
+                , Cmd.none
+                )
+
+            Attack ->
+                ( { model | player = (attacking newPosition model.player) }
+                , Random.generate AttackPower (Random.int 1 6)
+                )
+
+
+attacking : Point -> Player -> Player
+attacking victim player =
+    { player | attacking = Just victim }
+
+
+move : Point -> Player -> Player
+move newPosition player =
+    { player | coords = newPosition }
 
 
 requestedAction : Request -> Point -> Neighbours -> ( Action, Point )
@@ -86,8 +115,8 @@ cellOccupant point { board, player } =
     in
         if point.x == 0 || point.x == width || point.y == 0 || point.y == height then
             Brick
-        else if point == player then
-            Player
+        else if point == player.coords then
+            PlayerTile
         else
             EmptySpace
 
