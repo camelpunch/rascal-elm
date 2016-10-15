@@ -1,11 +1,11 @@
 module Model exposing (..)
 
-import Player exposing (..)
+import Actor exposing (..)
 
 
 type alias Model =
     { board : Board
-    , player : Player
+    , player : Actor
     }
 
 

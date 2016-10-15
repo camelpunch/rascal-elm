@@ -1,9 +1,9 @@
-module Player exposing (..)
+module Actor exposing (..)
 
 import Point exposing (..)
 
 
-type alias Player =
+type alias Actor =
     { coords : Point
     , attacking : Maybe Point
     }

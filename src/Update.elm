@@ -1,12 +1,12 @@
 module Update exposing (Msg(..), subscriptions, update, cellOccupant, processRequest)
 
 import Action exposing (..)
+import Actor exposing (..)
 import Keyboard
 import Keys
 import Model exposing (Model, Board)
 import Neighbours exposing (..)
 import Occupant exposing (..)
-import Player exposing (..)
 import Point exposing (..)
 import Random
 import Request exposing (..)
@@ -66,12 +66,12 @@ processRequest request model =
                 )
 
 
-attacking : Point -> Player -> Player
+attacking : Point -> Actor -> Actor
 attacking victim player =
     { player | attacking = Just victim }
 
 
-move : Point -> Player -> Player
+move : Point -> Actor -> Actor
 move newPosition player =
     { player | coords = newPosition }
 
