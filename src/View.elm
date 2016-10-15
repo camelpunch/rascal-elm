@@ -49,7 +49,7 @@ column col row model =
 renderPiece : Occupant -> String
 renderPiece piece =
     case piece of
-        PlayerTile ->
+        Player ->
             "@"
 
         Brick ->

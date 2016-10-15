@@ -119,7 +119,7 @@ cellOccupant point { board, player } =
         if point.x == 0 || point.x == width || point.y == 0 || point.y == height then
             Brick
         else if point == player.coords then
-            PlayerTile
+            Player
         else
             EmptySpace
 

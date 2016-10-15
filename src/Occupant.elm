@@ -2,6 +2,6 @@ module Occupant exposing (..)
 
 
 type Occupant
-    = PlayerTile
+    = Player
     | Brick
     | EmptySpace

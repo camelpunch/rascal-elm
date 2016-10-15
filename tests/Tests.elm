@@ -24,7 +24,7 @@ all =
             , test "player is at expected position" <|
                 \_ ->
                     Expect.equal
-                        PlayerTile
+                        Player
                         (Update.cellOccupant model.player.coords model)
             , describe "movement"
                 [ fuzzWith { runs = 10000 }
