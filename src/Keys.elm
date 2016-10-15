@@ -1,7 +1,18 @@
-module Keys exposing (requestFromKeyCode)
+module Keys exposing (Key, requestFromKeyCode)
 
-import Model exposing (Key(..), Model)
 import Request exposing (..)
+
+
+type Key
+    = ArrowLeft
+    | ArrowRight
+    | ArrowUp
+    | ArrowDown
+    | H
+    | J
+    | K
+    | L
+    | Unknown
 
 
 requestFromKeyCode : Int -> Maybe Request

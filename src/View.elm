@@ -2,9 +2,10 @@ module View exposing (view)
 
 import Html exposing (Html, text, div, table, tr, td)
 import Html.CssHelpers
-import Model exposing (Model, Occupant(..))
-import Update exposing (cellOccupant)
+import Model exposing (Model)
+import Occupant exposing (..)
 import SharedStyles
+import Update exposing (cellOccupant)
 
 
 { id, class, classList } =

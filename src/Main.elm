@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html.App
-import Model exposing (Model, Key(..))
+import Model exposing (..)
 import Random
 import Update exposing (update, subscriptions)
 import View exposing (view)

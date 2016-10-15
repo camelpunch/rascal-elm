@@ -1,8 +1,11 @@
 module Update exposing (Msg(..), subscriptions, update, cellOccupant, processRequest)
 
+import Action exposing (..)
 import Keyboard
 import Keys
-import Model exposing (Model, Board, Key(..), Action(..), Occupant(..), Neighbours)
+import Model exposing (Model, Board)
+import Neighbours exposing (..)
+import Occupant exposing (..)
 import Player exposing (..)
 import Point exposing (..)
 import Random

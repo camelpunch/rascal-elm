@@ -3,6 +3,7 @@ module Tests exposing (..)
 import Expect
 import Fuzz exposing (..)
 import Model exposing (Model)
+import Occupant exposing (..)
 import Request exposing (..)
 import Test exposing (..)
 import Update
@@ -18,12 +19,12 @@ all =
             [ test "board has empty space" <|
                 \_ ->
                     Expect.equal
-                        Model.EmptySpace
+                        EmptySpace
                         (Update.cellOccupant { x = 1, y = 1 } model)
             , test "player is at expected position" <|
                 \_ ->
                     Expect.equal
-                        Model.PlayerTile
+                        PlayerTile
                         (Update.cellOccupant model.player.coords model)
             , describe "movement"
                 [ fuzzWith { runs = 10000 }
