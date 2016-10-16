@@ -43,7 +43,7 @@ update msg model =
 processRequest : Maybe Request -> Model -> ( Model, Cmd Msg )
 processRequest request model =
     let
-        ( action, newPosition ) =
+        action =
             case request of
                 Just request ->
                     requestedAction
@@ -52,18 +52,19 @@ processRequest request model =
                         (neighbours model.player.coords model)
 
                 Nothing ->
-                    ( Occupy, model.player.coords )
+                    Occupy model.player.coords
     in
         case action of
-            Occupy ->
+            Occupy newPosition ->
                 ( { model | player = (move newPosition model.player) }
                 , Cmd.none
                 )
 
-            Attack ->
-                ( { model | player = (attacking newPosition model.player) }
-                , Random.generate AttackPower (Random.int 1 6)
-                )
+            Attack actor ->
+                -- ( { model | player = (attacking actor.coords model.player) }
+                -- , Random.generate AttackPower (Random.int 1 6)
+                -- )
+                ( model, Cmd.none )
 
 
 attacking : Point -> Actor -> Actor
@@ -76,7 +77,7 @@ move newPosition player =
     { player | coords = newPosition }
 
 
-requestedAction : Request -> Point -> Neighbours -> ( Action, Point )
+requestedAction : Request -> Point -> Neighbours -> Action
 requestedAction request point neighbours =
     let
         ( occupant, destination ) =
@@ -95,10 +96,10 @@ requestedAction request point neighbours =
     in
         case occupant of
             EmptySpace ->
-                ( Occupy, destination )
+                Occupy destination
 
             _ ->
-                ( Occupy, point )
+                Occupy point
 
 
 neighbours : Point -> Model -> Neighbours
