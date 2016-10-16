@@ -6,7 +6,7 @@ import Model exposing (Model)
 import Occupant exposing (..)
 import Request exposing (..)
 import Test exposing (..)
-import Update exposing (Msg(..))
+import Application exposing (cellOccupant, Msg(..))
 
 
 all : Test
@@ -16,12 +16,12 @@ all =
             \_ ->
                 Expect.equal
                     EmptySpace
-                    (Update.cellOccupant { x = 1, y = 1 } emptyBoardWithPlayer)
+                    (Application.cellOccupant { x = 1, y = 1 } emptyBoardWithPlayer)
         , test "player is at expected position" <|
             \_ ->
                 Expect.equal
                     Player
-                    (Update.cellOccupant emptyBoardWithPlayer.player.coords emptyBoardWithPlayer)
+                    (Application.cellOccupant emptyBoardWithPlayer.player.coords emptyBoardWithPlayer)
         , describe "movement"
             [ fuzzWith { runs = 10000 }
                 (Fuzz.list movement)
@@ -81,7 +81,7 @@ modelAfterMovements requests beforeState =
 
 dispatchRequest : Request -> Model -> Model
 dispatchRequest request state =
-    fst (Update.processRequest (Just request) state)
+    fst (Application.processRequest (Just request) state)
 
 
 movement : Fuzzer Request

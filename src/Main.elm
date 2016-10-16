@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Application
 import Html.App
 import Model exposing (..)
 import Random
@@ -17,10 +18,10 @@ main =
         }
 
 
-init : ( Model, Cmd Update.Msg )
+init : ( Model, Cmd Application.Msg )
 init =
     ( model
-    , Random.generate Update.NewGame
+    , Random.generate Application.NewGame
         (let
             ( width, height ) =
                 model.board

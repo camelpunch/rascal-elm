@@ -5,7 +5,7 @@ import Html.CssHelpers
 import Model exposing (Model)
 import Occupant exposing (..)
 import SharedStyles
-import Update exposing (cellOccupant)
+import Application exposing (cellOccupant)
 
 
 { id, class, classList } =
