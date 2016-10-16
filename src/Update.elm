@@ -15,7 +15,7 @@ import Request exposing (..)
 type Msg
     = NewGame ( Int, Int )
     | KeyDown Keyboard.KeyCode
-    | AttackPower Int
+    | AttackRoll Int
 
 
 subscriptions : Model -> Sub Msg
@@ -25,56 +25,60 @@ subscriptions model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    let
+        ( newModel, newMsg ) =
+            testableUpdate msg model
+
+        newCmd =
+            case newMsg of
+                Nothing ->
+                    Cmd.none
+
+                Just m ->
+                    Cmd.none
+    in
+        ( newModel, newCmd )
+
+
+testableUpdate : Msg -> Model -> ( Model, Maybe Msg )
+testableUpdate msg model =
     case msg of
         KeyDown keyCode ->
             processRequest (Keys.requestFromKeyCode keyCode) model
 
         NewGame ( playerX, playerY ) ->
             ( { model | player = (move { x = playerX, y = playerY } model.player) }
-            , Cmd.none
+            , Nothing
             )
 
-        AttackPower power ->
+        AttackRoll power ->
             ( model
-            , Cmd.none
+            , Nothing
             )
 
 
-processRequest : Maybe Request -> Model -> ( Model, Cmd Msg )
+processRequest : Maybe Request -> Model -> ( Model, Maybe Msg )
 processRequest request model =
-    let
-        action =
-            case request of
-                Just request ->
-                    requestedAction
-                        request
-                        model.player.coords
-                        (neighbours model.player.coords model)
+    case request of
+        Just request ->
+            case
+                requestedAction
+                    request
+                    model.player.coords
+                    (neighbours model.player.coords model)
+            of
+                Occupy position ->
+                    ( { model | player = move position model.player }
+                    , Nothing
+                    )
 
-                Nothing ->
-                    Occupy model.player.coords
-    in
-        case action of
-            Occupy newPosition ->
-                ( { model | player = (move newPosition model.player) }
-                , Cmd.none
-                )
+                Attack actor ->
+                    ( model
+                    , Nothing
+                    )
 
-            Attack actor ->
-                -- ( { model | player = (attacking actor.coords model.player) }
-                -- , Random.generate AttackPower (Random.int 1 6)
-                -- )
-                ( model, Cmd.none )
-
-
-attacking : Point -> Actor -> Actor
-attacking victim player =
-    { player | attacking = Just victim }
-
-
-move : Point -> Actor -> Actor
-move newPosition player =
-    { player | coords = newPosition }
+        Nothing ->
+            ( model, Nothing )
 
 
 requestedAction : Request -> Point -> Neighbours -> Action
@@ -100,6 +104,16 @@ requestedAction request point neighbours =
 
             _ ->
                 Occupy point
+
+
+attacking : Point -> Actor -> Actor
+attacking victim player =
+    { player | attacking = Just victim }
+
+
+move : Point -> Actor -> Actor
+move newPosition player =
+    { player | coords = newPosition }
 
 
 neighbours : Point -> Model -> Neighbours

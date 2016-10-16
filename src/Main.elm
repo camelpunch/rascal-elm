@@ -40,4 +40,5 @@ model =
         { coords = { x = 5, y = 5 }
         , attacking = Nothing
         }
+    , monsters = []
     }

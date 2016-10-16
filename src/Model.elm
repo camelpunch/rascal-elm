@@ -6,6 +6,7 @@ import Actor exposing (..)
 type alias Model =
     { board : Board
     , player : Actor
+    , monsters : List Actor
     }
 
 

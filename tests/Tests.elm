@@ -6,45 +6,59 @@ import Model exposing (Model)
 import Occupant exposing (..)
 import Request exposing (..)
 import Test exposing (..)
-import Update
+import Update exposing (Msg(..))
 
 
 all : Test
 all =
-    let
-        ( width, height ) =
-            model.board
-    in
-        describe "Game"
-            [ test "board has empty space" <|
-                \_ ->
-                    Expect.equal
-                        EmptySpace
-                        (Update.cellOccupant { x = 1, y = 1 } model)
-            , test "player is at expected position" <|
-                \_ ->
-                    Expect.equal
-                        Player
-                        (Update.cellOccupant model.player.coords model)
-            , describe "movement"
-                [ fuzzWith { runs = 10000 }
-                    (Fuzz.list movement)
-                    "never results in being inside wall"
-                    (\requests ->
-                        (playerInsideWall requests model)
-                            |> Expect.false "player inside wall"
-                    )
-                ]
+    describe "Game"
+        [ test "board has empty space" <|
+            \_ ->
+                Expect.equal
+                    EmptySpace
+                    (Update.cellOccupant { x = 1, y = 1 } emptyBoardWithPlayer)
+        , test "player is at expected position" <|
+            \_ ->
+                Expect.equal
+                    Player
+                    (Update.cellOccupant emptyBoardWithPlayer.player.coords emptyBoardWithPlayer)
+        , describe "movement"
+            [ fuzzWith { runs = 10000 }
+                (Fuzz.list movement)
+                "never results in being inside wall"
+                (\requests ->
+                    (playerInsideWall requests emptyBoardWithPlayer)
+                        |> Expect.false "player inside wall"
+                )
             ]
+          -- , describe "combat"
+          --     [ test "player triggers an attack when moving into a monster" <|
+          --         \_ ->
+          --             Expect.equal ( playerToRightOfMonster, AttackRoll )
+          --                 (Update.processRequest (Just MoveLeft) playerToRightOfMonster)
+          --     ]
+        ]
 
 
-model : Model
-model =
+emptyBoardWithPlayer : Model
+emptyBoardWithPlayer =
     { board = ( 5, 5 )
     , player =
         { coords = { x = 2, y = 2 }
         , attacking = Nothing
         }
+    , monsters = []
+    }
+
+
+playerToRightOfMonster : Model
+playerToRightOfMonster =
+    { emptyBoardWithPlayer
+        | monsters =
+            [ { coords = { x = 1, y = 2 }
+              , attacking = Nothing
+              }
+            ]
     }
 
 
