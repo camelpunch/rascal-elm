@@ -1,5 +1,6 @@
 module Update exposing (subscriptions, update)
 
+import Action exposing (..)
 import Application exposing (update, Msg(..))
 import Keyboard
 import Model exposing (Model)
@@ -23,6 +24,13 @@ update msg model =
                     Cmd.none
 
                 Just m ->
-                    Cmd.none
+                    case m of
+                        Roll (Attack actor) ->
+                            Random.generate
+                                (DieFace (Attack actor))
+                                (Random.int 1 6)
+
+                        _ ->
+                            Cmd.none
     in
         ( newModel, newCmd )

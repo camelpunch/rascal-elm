@@ -1,6 +1,6 @@
 module View exposing (view)
 
-import Html exposing (Html, text, div, table, tr, td)
+import Html exposing (Html, text, div, table, tr, td, ul, li)
 import Html.CssHelpers
 import Model exposing (Model)
 import Occupant exposing (..)
@@ -16,8 +16,18 @@ view model =
         ( width, height ) =
             model.board
     in
-        table [ id SharedStyles.Page ]
-            (List.map (row model) [0..height])
+        div [ id SharedStyles.Page ]
+            [ table []
+                (List.map (row model) [0..height])
+            , ul []
+                (List.map
+                    (\m ->
+                        li []
+                            [ text ("Monster " ++ toString m.health) ]
+                    )
+                    model.monsters
+                )
+            ]
 
 
 row : Model -> Int -> Html msg
@@ -47,10 +57,13 @@ column col row model =
 
 
 renderPiece : Occupant -> String
-renderPiece piece =
-    case piece of
+renderPiece occupant =
+    case occupant of
         Player ->
             "@"
+
+        Enemy enemy ->
+            "E"
 
         Brick ->
             "#"

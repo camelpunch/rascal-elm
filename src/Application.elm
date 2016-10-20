@@ -14,7 +14,8 @@ import Request exposing (..)
 type Msg
     = NewGame ( Int, Int )
     | KeyDown Keyboard.KeyCode
-    | AttackRoll Int
+    | Roll Action
+    | DieFace Action Int
 
 
 update : Msg -> Model -> ( Model, Maybe Msg )
@@ -28,10 +29,30 @@ update msg model =
             , Nothing
             )
 
-        AttackRoll power ->
+        DieFace (Attack actor) attackStrength ->
+            ( damage actor attackStrength model
+            , Nothing
+            )
+
+        _ ->
             ( model
             , Nothing
             )
+
+
+damage : Actor -> Int -> Model -> Model
+damage actor attackStrength model =
+    { model
+        | monsters =
+            List.map
+                (\m ->
+                    if m == actor then
+                        { m | health = m.health - (attackStrength * 10) }
+                    else
+                        m
+                )
+                model.monsters
+    }
 
 
 processRequest : Maybe Request -> Model -> ( Model, Maybe Msg )
@@ -51,7 +72,7 @@ processRequest request model =
 
                 Attack actor ->
                     ( model
-                    , Nothing
+                    , Just (Roll (Attack actor))
                     )
 
         Nothing ->
@@ -79,13 +100,14 @@ requestedAction request point neighbours =
             EmptySpace ->
                 Occupy destination
 
-            _ ->
+            Brick ->
                 Occupy point
 
+            Player ->
+                Occupy point
 
-attacking : Point -> Actor -> Actor
-attacking victim player =
-    { player | attacking = Just victim }
+            Enemy enemy ->
+                Attack enemy
 
 
 move : Point -> Actor -> Actor
@@ -103,17 +125,28 @@ neighbours actor model =
 
 
 cellOccupant : Point -> Model -> Occupant
-cellOccupant point { board, player } =
+cellOccupant point { board, player, monsters } =
     let
         ( width, height ) =
             board
+
+        monsterAtPoint =
+            List.head
+                (List.filter (\m -> m.coords == point)
+                    monsters
+                )
     in
-        if point.x == 0 || point.x == width || point.y == 0 || point.y == height then
-            Brick
-        else if point == player.coords then
-            Player
-        else
-            EmptySpace
+        case monsterAtPoint of
+            Just monster ->
+                Enemy monster
+
+            Nothing ->
+                if point.x == 0 || point.x == width || point.y == 0 || point.y == height then
+                    Brick
+                else if point == player.coords then
+                    Player
+                else
+                    EmptySpace
 
 
 above : Point -> Point

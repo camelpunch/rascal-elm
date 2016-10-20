@@ -39,7 +39,11 @@ model =
     { board = ( 30, 20 )
     , player =
         { coords = { x = 5, y = 5 }
-        , attacking = Nothing
+        , health = 100
         }
-    , monsters = []
+    , monsters =
+        [ { coords = { x = 15, y = 10 }
+          , health = 100
+          }
+        ]
     }
