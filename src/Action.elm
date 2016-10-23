@@ -6,4 +6,4 @@ import Point exposing (..)
 
 type Action
     = Occupy Point
-    | Attack Actor
+    | Attack Actor Actor

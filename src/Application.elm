@@ -29,18 +29,23 @@ update msg model =
             , Nothing
             )
 
-        DieFace (Attack victim) attackStrength ->
+        DieFace (Attack perp victim) attackStrength ->
             ( damage victim attackStrength model
-            , if victim == model.player then
+            , if isCounterAttack victim model then
                 Nothing
               else
-                Just (Roll (Attack model.player))
+                Just (Roll (Attack victim model.player))
             )
 
         _ ->
             ( model
             , Nothing
             )
+
+
+isCounterAttack : Actor -> Model -> Bool
+isCounterAttack victim model =
+    victim == model.player
 
 
 damage : Actor -> Int -> Model -> Model
@@ -74,7 +79,7 @@ processRequest request model =
             case
                 requestedAction
                     request
-                    model.player.coords
+                    model.player
                     (neighbours model.player.coords model)
             of
                 Occupy position ->
@@ -82,17 +87,17 @@ processRequest request model =
                     , Nothing
                     )
 
-                Attack actor ->
+                Attack perp victim ->
                     ( model
-                    , Just (Roll (Attack actor))
+                    , Just (Roll (Attack perp victim))
                     )
 
         Nothing ->
             ( model, Nothing )
 
 
-requestedAction : Request -> Point -> Neighbours -> Action
-requestedAction request point neighbours =
+requestedAction : Request -> Actor -> Neighbours -> Action
+requestedAction request player neighbours =
     let
         ( occupant, destination ) =
             case request of
@@ -113,13 +118,13 @@ requestedAction request point neighbours =
                 Occupy destination
 
             Brick ->
-                Occupy point
+                Occupy player.coords
 
             Player ->
-                Occupy point
+                Occupy player.coords
 
             Enemy enemy ->
-                Attack enemy
+                Attack player enemy
 
 
 move : Point -> Actor -> Actor

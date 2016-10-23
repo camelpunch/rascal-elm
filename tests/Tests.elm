@@ -37,7 +37,7 @@ all =
             [ test "player triggers an attack when moving into a monster" <|
                 \_ ->
                     Expect.equal
-                        ( playerToRightOfMonster, Just (Roll (Attack secondMonster)) )
+                        ( playerToRightOfMonster, Just (Roll (Attack playerToRightOfMonster.player secondMonster)) )
                         (Application.processRequest (Just MoveLeft) playerToRightOfMonster)
             , test "attack causes damage to monster" <|
                 \_ ->
@@ -46,7 +46,7 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (DieFace (Attack secondMonster) 6)
+                                    (DieFace (Attack playerToRightOfMonster.player secondMonster) 6)
                                     playerToRightOfMonster
                                 )
                          in
@@ -55,11 +55,11 @@ all =
             , test "attacks trigger counterattacks" <|
                 \_ ->
                     Expect.equal
-                        (Just (Roll (Attack playerToRightOfMonster.player)))
+                        (Just (Roll (Attack secondMonster playerToRightOfMonster.player)))
                         (let
                             ( _, cmd ) =
                                 (Application.update
-                                    (DieFace (Attack secondMonster) 5)
+                                    (DieFace (Attack playerToRightOfMonster.player secondMonster) 5)
                                     playerToRightOfMonster
                                 )
                          in
@@ -72,7 +72,7 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (DieFace (Attack playerToRightOfMonster.player) 6)
+                                    (DieFace (Attack secondMonster playerToRightOfMonster.player) 6)
                                     playerToRightOfMonster
                                 )
                          in
@@ -85,7 +85,7 @@ all =
                         (let
                             ( _, cmd ) =
                                 (Application.update
-                                    (DieFace (Attack playerToRightOfMonster.player) 5)
+                                    (DieFace (Attack secondMonster playerToRightOfMonster.player) 5)
                                     playerToRightOfMonster
                                 )
                          in

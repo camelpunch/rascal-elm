@@ -25,9 +25,9 @@ update msg model =
 
                 Just m ->
                     case m of
-                        Roll (Attack actor) ->
+                        Roll (Attack perp victim) ->
                             Random.generate
-                                (DieFace (Attack actor))
+                                (DieFace (Attack perp victim))
                                 (Random.int 1 6)
 
                         _ ->
