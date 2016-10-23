@@ -17,20 +17,17 @@ update msg model =
     let
         ( newModel, newMsg ) =
             Application.update msg model
-
-        newCmd =
-            case newMsg of
-                Nothing ->
-                    Cmd.none
-
-                Just m ->
-                    case m of
-                        Roll (Attack perp victim) ->
-                            Random.generate
-                                (DieFace (Attack perp victim))
-                                (Random.int 1 6)
-
-                        _ ->
-                            Cmd.none
     in
-        ( newModel, newCmd )
+        ( newModel, cmd newMsg )
+
+
+cmd : Maybe Msg -> Cmd Msg
+cmd m =
+    case m of
+        Just (Roll action) ->
+            Random.generate
+                (DieFace action)
+                (Random.int 1 6)
+
+        _ ->
+            Cmd.none

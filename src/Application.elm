@@ -31,21 +31,18 @@ update msg model =
 
         DieFace (Attack perp victim) attackStrength ->
             ( damage victim attackStrength model
-            , if isCounterAttack victim model then
-                Nothing
-              else
-                Just (Roll (Attack victim model.player))
+            , Just (Roll (CounterAttack victim model.player))
+            )
+
+        DieFace (CounterAttack perp victim) attackStrength ->
+            ( damage victim attackStrength model
+            , Nothing
             )
 
         _ ->
             ( model
             , Nothing
             )
-
-
-isCounterAttack : Actor -> Model -> Bool
-isCounterAttack victim model =
-    victim == model.player
 
 
 damage : Actor -> Int -> Model -> Model
@@ -91,6 +88,9 @@ processRequest request model =
                     ( model
                     , Just (Roll (Attack perp victim))
                     )
+
+                _ ->
+                    ( model, Nothing )
 
         Nothing ->
             ( model, Nothing )

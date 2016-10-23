@@ -55,7 +55,7 @@ all =
             , test "attacks trigger counterattacks" <|
                 \_ ->
                     Expect.equal
-                        (Just (Roll (Attack secondMonster playerToRightOfMonster.player)))
+                        (Just (Roll (CounterAttack secondMonster playerToRightOfMonster.player)))
                         (let
                             ( _, cmd ) =
                                 (Application.update
@@ -72,7 +72,7 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (DieFace (Attack secondMonster playerToRightOfMonster.player) 6)
+                                    (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 6)
                                     playerToRightOfMonster
                                 )
                          in
@@ -85,7 +85,7 @@ all =
                         (let
                             ( _, cmd ) =
                                 (Application.update
-                                    (DieFace (Attack secondMonster playerToRightOfMonster.player) 5)
+                                    (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 5)
                                     playerToRightOfMonster
                                 )
                          in
