@@ -52,6 +52,45 @@ all =
                          in
                             List.map .health newState.monsters
                         )
+            , test "attacks trigger counterattacks" <|
+                \_ ->
+                    Expect.equal
+                        (Just (Roll (Attack playerToRightOfMonster.player)))
+                        (let
+                            ( _, cmd ) =
+                                (Application.update
+                                    (DieFace (Attack secondMonster) 5)
+                                    playerToRightOfMonster
+                                )
+                         in
+                            cmd
+                        )
+            , test "counterattacks damage player" <|
+                \_ ->
+                    Expect.equal
+                        40
+                        (let
+                            ( newState, _ ) =
+                                (Application.update
+                                    (DieFace (Attack playerToRightOfMonster.player) 6)
+                                    playerToRightOfMonster
+                                )
+                         in
+                            newState.player.health
+                        )
+            , test "counterattacks don't trigger more attacks" <|
+                \_ ->
+                    Expect.equal
+                        Nothing
+                        (let
+                            ( _, cmd ) =
+                                (Application.update
+                                    (DieFace (Attack playerToRightOfMonster.player) 5)
+                                    playerToRightOfMonster
+                                )
+                         in
+                            cmd
+                        )
             ]
         ]
 

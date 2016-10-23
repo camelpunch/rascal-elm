@@ -20,12 +20,16 @@ view model =
             [ table []
                 (List.map (row model) [0..height])
             , ul []
-                (List.map
-                    (\m ->
-                        li []
-                            [ text ("Monster " ++ toString m.health) ]
-                    )
-                    model.monsters
+                ((li []
+                    [ text ("Player " ++ toString model.player.health) ]
+                 )
+                    :: (List.map
+                            (\m ->
+                                li []
+                                    [ text ("Monster " ++ toString m.health) ]
+                            )
+                            model.monsters
+                       )
                 )
             ]
 

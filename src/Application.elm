@@ -29,9 +29,12 @@ update msg model =
             , Nothing
             )
 
-        DieFace (Attack actor) attackStrength ->
-            ( damage actor attackStrength model
-            , Nothing
+        DieFace (Attack victim) attackStrength ->
+            ( damage victim attackStrength model
+            , if victim == model.player then
+                Nothing
+              else
+                Just (Roll (Attack model.player))
             )
 
         _ ->
@@ -41,18 +44,27 @@ update msg model =
 
 
 damage : Actor -> Int -> Model -> Model
-damage actor attackStrength model =
+damage victim attackStrength model =
     { model
         | monsters =
             List.map
                 (\m ->
-                    if m == actor then
-                        { m | health = m.health - (attackStrength * 10) }
+                    if victim == m then
+                        applyDamage attackStrength victim
                     else
                         m
                 )
                 model.monsters
+        , player =
+            if victim == model.player then
+                applyDamage attackStrength victim
+            else
+                model.player
     }
+
+
+applyDamage attackStrength victim =
+    { victim | health = victim.health - (attackStrength * 10) }
 
 
 processRequest : Maybe Request -> Model -> ( Model, Maybe Msg )
