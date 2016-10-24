@@ -3,7 +3,7 @@ module Update exposing (subscriptions, update)
 import Action exposing (..)
 import Application exposing (update, Msg(..))
 import Keyboard
-import Model exposing (Model)
+import Model exposing (..)
 import Random
 
 
