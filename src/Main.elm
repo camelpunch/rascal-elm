@@ -25,10 +25,13 @@ init =
         (let
             ( width, height ) =
                 model.board
+
+            boundingWallDepth =
+                1
          in
             (Random.pair
-                (Random.int 1 (width - 1))
-                (Random.int 1 (height - 1))
+                (Random.int boundingWallDepth (width - boundingWallDepth))
+                (Random.int boundingWallDepth (height - boundingWallDepth))
             )
         )
     )
