@@ -97,7 +97,7 @@ processRequest request model =
 
 
 requestedAction : Request -> Actor -> Neighbours -> Action
-requestedAction request player neighbours =
+requestedAction request actor neighbours =
     let
         ( occupant, destination ) =
             case request of
@@ -118,13 +118,13 @@ requestedAction request player neighbours =
                 Occupy destination
 
             Brick ->
-                Occupy player.coords
+                Occupy actor.coords
 
             Player ->
-                Occupy player.coords
+                Occupy actor.coords
 
             Enemy enemy ->
-                Attack player enemy
+                Attack actor enemy
 
 
 move : Point -> Actor -> Actor
