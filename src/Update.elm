@@ -27,7 +27,7 @@ cmd m =
         Just (Roll action) ->
             Random.generate
                 (DieFace action)
-                (Random.int 1 6)
+                (Random.int 1 10)
 
         _ ->
             Cmd.none

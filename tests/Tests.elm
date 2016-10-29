@@ -52,6 +52,19 @@ all =
                          in
                             List.map .health newState.monsters
                         )
+            , test "monster ceases to exist when health reaches zero" <|
+                \_ ->
+                    Expect.equal
+                        [ firstMonster ]
+                        (let
+                            ( newState, _ ) =
+                                (Application.update
+                                    (DieFace (Attack playerToRightOfMonster.player secondMonster) 10)
+                                    playerToRightOfMonster
+                                )
+                         in
+                            newState.monsters
+                        )
             , test "attacks trigger counterattacks" <|
                 \_ ->
                     Expect.equal

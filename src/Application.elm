@@ -48,25 +48,46 @@ update msg model =
 damage : Actor -> Int -> Model -> Model
 damage victim attackStrength model =
     { model
-        | monsters =
-            List.map
-                (\m ->
-                    if victim == m then
-                        applyDamage attackStrength victim
-                    else
-                        m
-                )
-                model.monsters
+        | monsters = damageInGroup attackStrength victim model.monsters
         , player =
-            if victim == model.player then
-                applyDamage attackStrength victim
-            else
-                model.player
+            case damageInGroup attackStrength victim [ model.player ] of
+                [] ->
+                    model.player
+
+                actor :: _ ->
+                    actor
     }
 
 
+damageInGroup : Int -> Actor -> (List Actor -> List Actor)
+damageInGroup attackStrength victim =
+    List.foldl
+        (\actor survivors ->
+            let
+                damaged =
+                    applyDamage attackStrength
+
+                survivor =
+                    if victim == actor && isDead (damaged victim) then
+                        []
+                    else if victim == actor then
+                        [ damaged victim ]
+                    else
+                        [ actor ]
+            in
+                List.append survivors survivor
+        )
+        []
+
+
+applyDamage : Int -> Actor -> Actor
 applyDamage attackStrength victim =
     { victim | health = victim.health - (attackStrength * 10) }
+
+
+isDead : Actor -> Bool
+isDead actor =
+    actor.health <= 0
 
 
 processRequest : Maybe Request -> Model -> ( Model, Maybe Msg )
