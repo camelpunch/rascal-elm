@@ -52,7 +52,7 @@ damage victim attackStrength model =
         , player =
             case damageInGroup attackStrength victim [ model.player ] of
                 [] ->
-                    model.player
+                    dead model.player
 
                 actor :: _ ->
                     actor
@@ -83,6 +83,11 @@ damageInGroup attackStrength victim =
 applyDamage : Int -> Actor -> Actor
 applyDamage attackStrength victim =
     { victim | health = victim.health - (attackStrength * 10) }
+
+
+dead : Actor -> Actor
+dead actor =
+    { actor | health = 0 }
 
 
 isDead : Actor -> Bool

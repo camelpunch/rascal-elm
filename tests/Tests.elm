@@ -80,17 +80,24 @@ all =
                         )
             , test "counterattacks damage player" <|
                 \_ ->
-                    Expect.equal
-                        40
-                        (let
-                            ( newState, _ ) =
-                                (Application.update
-                                    (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 6)
-                                    playerToRightOfMonster
-                                )
-                         in
-                            newState.player.health
-                        )
+                    let
+                        ( newState, _ ) =
+                            (Application.update
+                                (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 6)
+                                playerToRightOfMonster
+                            )
+                    in
+                        Expect.equal 40 newState.player.health
+            , test "counterattacks can kill player" <|
+                \_ ->
+                    let
+                        ( newState, _ ) =
+                            (Application.update
+                                (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 10)
+                                playerToRightOfMonster
+                            )
+                    in
+                        Expect.equal 0 newState.player.health
             , test "counterattacks don't trigger more attacks" <|
                 \_ ->
                     Expect.equal
