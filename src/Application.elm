@@ -39,10 +39,11 @@ update msg model =
             , Nothing
             )
 
-        _ ->
-            ( model
-            , Nothing
-            )
+        Roll _ ->
+            ( model, Nothing )
+
+        DieFace (Occupy _) _ ->
+            ( model, Nothing )
 
 
 damage : Actor -> Int -> Model -> Model
@@ -111,11 +112,9 @@ processRequest request model =
                     )
 
                 Attack perp victim ->
-                    ( model
-                    , Just (Roll (Attack perp victim))
-                    )
+                    ( model, Just (Roll (Attack perp victim)) )
 
-                _ ->
+                CounterAttack _ _ ->
                     ( model, Nothing )
 
         Nothing ->
