@@ -2,9 +2,10 @@ module Update exposing (subscriptions, update)
 
 import Action exposing (..)
 import Application exposing (update, Msg(..))
+import Array
 import Keyboard
 import Model exposing (..)
-import Random
+import Random exposing (generate, int, list)
 
 
 subscriptions : Model -> Sub Msg
@@ -24,10 +25,20 @@ update msg model =
 cmd : Maybe Msg -> Cmd Msg
 cmd m =
     case m of
-        Just (Roll action) ->
-            Random.generate
-                (DieFace action)
-                (Random.int 1 10)
+        Just (Roll []) ->
+            Cmd.none
+
+        Just (Roll actions) ->
+            let
+                actionsCount =
+                    List.length actions
+            in
+                generate
+                    Dice
+                    (Random.map
+                        (List.map2 (,) actions)
+                        (list actionsCount (int 1 10))
+                    )
 
         _ ->
             Cmd.none

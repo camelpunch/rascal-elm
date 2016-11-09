@@ -14,8 +14,8 @@ import Request exposing (..)
 type Msg
     = NewGame ( Int, Int )
     | KeyDown Keyboard.KeyCode
-    | Roll Action
-    | DieFace Action Int
+    | Roll (List Action)
+    | Dice (List ( Action, Int ))
 
 
 update : Msg -> Model -> ( Model, Maybe Msg )
@@ -29,21 +29,56 @@ update msg model =
             , Nothing
             )
 
-        DieFace (Attack perp victim) attackStrength ->
-            ( damage victim attackStrength model
-            , Just (Roll (CounterAttack victim model.player))
-            )
-
-        DieFace (CounterAttack perp victim) attackStrength ->
-            ( damage victim attackStrength model
-            , Nothing
+        Dice faces ->
+            ( performBattles faces model
+            , Just (Roll (counterAttacksAgainst model.player faces))
             )
 
         Roll _ ->
             ( model, Nothing )
 
-        DieFace (Occupy _) _ ->
-            ( model, Nothing )
+
+performBattles : List ( Action, Int ) -> Model -> Model
+performBattles faces model =
+    List.foldl
+        (\( action, attackStrength ) modelAcc ->
+            case action of
+                Attack perp victim ->
+                    damage victim attackStrength modelAcc
+
+                Occupy _ ->
+                    modelAcc
+        )
+        model
+        faces
+
+
+counterAttacksAgainst : Actor -> List ( Action, Int ) -> List Action
+counterAttacksAgainst perp faces =
+    List.map (counterAttack perp) (victimsOf perp faces)
+
+
+counterAttack : Actor -> Actor -> Action
+counterAttack perp victim =
+    Attack victim perp
+
+
+victimsOf : Actor -> List ( Action, Int ) -> List Actor
+victimsOf perp dice =
+    List.foldl
+        (\( action, _ ) victims ->
+            case action of
+                Attack p v ->
+                    if p == perp then
+                        v :: victims
+                    else
+                        victims
+
+                Occupy _ ->
+                    victims
+        )
+        []
+        dice
 
 
 damage : Actor -> Int -> Model -> Model
@@ -112,10 +147,7 @@ processRequest request model =
                     )
 
                 Attack perp victim ->
-                    ( model, Just (Roll (Attack perp victim)) )
-
-                CounterAttack _ _ ->
-                    ( model, Nothing )
+                    ( model, Just (Roll [ (Attack perp victim) ]) )
 
         Nothing ->
             ( model, Nothing )

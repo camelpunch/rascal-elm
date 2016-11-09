@@ -37,7 +37,7 @@ all =
             [ test "player triggers an attack when moving into a monster" <|
                 \_ ->
                     Expect.equal
-                        ( playerToRightOfMonster, Just (Roll (Attack playerToRightOfMonster.player secondMonster)) )
+                        ( playerToRightOfMonster, Just (Roll [ (Attack playerToRightOfMonster.player secondMonster) ]) )
                         (Application.processRequest (Just MoveLeft) playerToRightOfMonster)
             , test "attack causes damage to monster" <|
                 \_ ->
@@ -46,7 +46,7 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (DieFace (Attack playerToRightOfMonster.player secondMonster) 6)
+                                    (Dice [ ( Attack playerToRightOfMonster.player secondMonster, 6 ) ])
                                     playerToRightOfMonster
                                 )
                          in
@@ -59,7 +59,7 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (DieFace (Attack playerToRightOfMonster.player secondMonster) 10)
+                                    (Dice [ ( Attack playerToRightOfMonster.player secondMonster, 10 ) ])
                                     playerToRightOfMonster
                                 )
                          in
@@ -67,50 +67,35 @@ all =
                         )
             , test "attacks trigger counterattacks" <|
                 \_ ->
-                    Expect.equal
-                        (Just (Roll (CounterAttack secondMonster playerToRightOfMonster.player)))
-                        (let
-                            ( _, cmd ) =
-                                (Application.update
-                                    (DieFace (Attack playerToRightOfMonster.player secondMonster) 5)
-                                    playerToRightOfMonster
-                                )
-                         in
+                    let
+                        ( _, cmd ) =
+                            Application.update
+                                (Dice [ ( Attack playerToRightOfMonster.player secondMonster, 5 ) ])
+                                playerToRightOfMonster
+                    in
+                        Expect.equal
+                            (Just (Roll [ (Attack secondMonster playerToRightOfMonster.player) ]))
                             cmd
-                        )
-            , test "counterattacks damage player" <|
+            , test "monster attacks damage player" <|
                 \_ ->
                     let
                         ( newState, _ ) =
                             (Application.update
-                                (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 6)
+                                (Dice [ ( Attack secondMonster playerToRightOfMonster.player, 6 ) ])
                                 playerToRightOfMonster
                             )
                     in
                         Expect.equal 40 newState.player.health
-            , test "counterattacks can kill player" <|
+            , test "monster attacks can kill player" <|
                 \_ ->
                     let
                         ( newState, _ ) =
                             (Application.update
-                                (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 10)
+                                (Dice [ ( Attack secondMonster playerToRightOfMonster.player, 10 ) ])
                                 playerToRightOfMonster
                             )
                     in
                         Expect.equal 0 newState.player.health
-            , test "counterattacks don't trigger more attacks" <|
-                \_ ->
-                    Expect.equal
-                        Nothing
-                        (let
-                            ( _, cmd ) =
-                                (Application.update
-                                    (DieFace (CounterAttack secondMonster playerToRightOfMonster.player) 5)
-                                    playerToRightOfMonster
-                                )
-                         in
-                            cmd
-                        )
             ]
         ]
 
