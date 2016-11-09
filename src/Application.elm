@@ -29,9 +29,9 @@ update msg model =
             , Nothing
             )
 
-        Dice faces ->
-            ( performBattles faces model
-            , Just (Roll (counterAttacksAgainst model.player faces))
+        Dice dice ->
+            ( performBattles dice model
+            , Just (Roll (counterAttacksAgainst model.player dice))
             )
 
         Roll _ ->
@@ -39,7 +39,7 @@ update msg model =
 
 
 performBattles : List ( Action, Int ) -> Model -> Model
-performBattles faces model =
+performBattles dice model =
     List.foldl
         (\( action, attackStrength ) modelAcc ->
             case action of
@@ -50,12 +50,12 @@ performBattles faces model =
                     modelAcc
         )
         model
-        faces
+        dice
 
 
 counterAttacksAgainst : Actor -> List ( Action, Int ) -> List Action
-counterAttacksAgainst perp faces =
-    List.map (counterAttack perp) (victimsOf perp faces)
+counterAttacksAgainst perp dice =
+    List.map (counterAttack perp) (victimsOf perp dice)
 
 
 counterAttack : Actor -> Actor -> Action
