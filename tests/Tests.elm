@@ -32,13 +32,18 @@ all =
                     (playerInsideWall requests emptyBoardWithPlayer)
                         |> Expect.false "player inside wall"
                 )
+            , test "dead player can't move" <|
+                \_ ->
+                    Expect.equal
+                        ( boardWithDeadPlayer, Nothing )
+                        (Application.processRequest (Just MoveLeft) boardWithDeadPlayer)
             ]
         , describe "combat"
             [ test "player triggers an attack when moving into a monster" <|
                 \_ ->
                     Expect.equal
-                        ( playerToRightOfMonster, Just (Roll [ (Attack playerToRightOfMonster.player secondMonster) ]) )
-                        (Application.processRequest (Just MoveLeft) playerToRightOfMonster)
+                        ( boardWithPlayerRightOfMonster, Just (Roll [ (Attack boardWithPlayerRightOfMonster.player secondMonster) ]) )
+                        (Application.processRequest (Just MoveLeft) boardWithPlayerRightOfMonster)
             , test "attack causes damage to monster" <|
                 \_ ->
                     Expect.equal
@@ -46,8 +51,8 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (Dice [ ( Attack playerToRightOfMonster.player secondMonster, 6 ) ])
-                                    playerToRightOfMonster
+                                    (Dice [ ( Attack boardWithPlayerRightOfMonster.player secondMonster, 6 ) ])
+                                    boardWithPlayerRightOfMonster
                                 )
                          in
                             List.map .health newState.monsters
@@ -59,8 +64,8 @@ all =
                         (let
                             ( newState, _ ) =
                                 (Application.update
-                                    (Dice [ ( Attack playerToRightOfMonster.player secondMonster, 10 ) ])
-                                    playerToRightOfMonster
+                                    (Dice [ ( Attack boardWithPlayerRightOfMonster.player secondMonster, 10 ) ])
+                                    boardWithPlayerRightOfMonster
                                 )
                          in
                             newState.monsters
@@ -70,19 +75,19 @@ all =
                     let
                         ( _, cmd ) =
                             Application.update
-                                (Dice [ ( Attack playerToRightOfMonster.player secondMonster, 5 ) ])
-                                playerToRightOfMonster
+                                (Dice [ ( Attack boardWithPlayerRightOfMonster.player secondMonster, 5 ) ])
+                                boardWithPlayerRightOfMonster
                     in
                         Expect.equal
-                            (Just (Roll [ (Attack secondMonster playerToRightOfMonster.player) ]))
+                            (Just (Roll [ (Attack secondMonster boardWithPlayerRightOfMonster.player) ]))
                             cmd
             , test "monster attacks damage player" <|
                 \_ ->
                     let
                         ( newState, _ ) =
                             (Application.update
-                                (Dice [ ( Attack secondMonster playerToRightOfMonster.player, 6 ) ])
-                                playerToRightOfMonster
+                                (Dice [ ( Attack secondMonster boardWithPlayerRightOfMonster.player, 6 ) ])
+                                boardWithPlayerRightOfMonster
                             )
                     in
                         Expect.equal 40 newState.player.health
@@ -91,8 +96,8 @@ all =
                     let
                         ( newState, _ ) =
                             (Application.update
-                                (Dice [ ( Attack secondMonster playerToRightOfMonster.player, 10 ) ])
-                                playerToRightOfMonster
+                                (Dice [ ( Attack secondMonster boardWithPlayerRightOfMonster.player, 10 ) ])
+                                boardWithPlayerRightOfMonster
                             )
                     in
                         Expect.equal 0 newState.player.health
@@ -109,8 +114,15 @@ emptyBoardWithPlayer =
     }
 
 
-playerToRightOfMonster : Model
-playerToRightOfMonster =
+boardWithDeadPlayer : Model
+boardWithDeadPlayer =
+    { emptyBoardWithPlayer
+        | player = Actor.dead emptyBoardWithPlayer.player
+    }
+
+
+boardWithPlayerRightOfMonster : Model
+boardWithPlayerRightOfMonster =
     { emptyBoardWithPlayer
         | monsters = [ firstMonster, secondMonster ]
         , player =

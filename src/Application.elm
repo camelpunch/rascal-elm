@@ -1,7 +1,7 @@
 module Application exposing (cellOccupant, processRequest, update, Msg(..))
 
 import Action exposing (..)
-import Actor exposing (..)
+import Actor exposing (Actor)
 import Keyboard
 import Keys
 import Model exposing (Model, Board)
@@ -88,7 +88,7 @@ damage victim attackStrength model =
         , player =
             case damageInGroup attackStrength victim [ model.player ] of
                 [] ->
-                    dead model.player
+                    Actor.dead model.player
 
                 actor :: _ ->
                     actor
@@ -104,7 +104,7 @@ damageInGroup attackStrength victim =
                     applyDamage attackStrength
 
                 survivor =
-                    if victim == actor && isDead (damaged victim) then
+                    if victim == actor && Actor.isDead (damaged victim) then
                         []
                     else if victim == actor then
                         [ damaged victim ]
@@ -121,20 +121,16 @@ applyDamage attackStrength victim =
     { victim | health = victim.health - (attackStrength * 10) }
 
 
-dead : Actor -> Actor
-dead actor =
-    { actor | health = 0 }
-
-
-isDead : Actor -> Bool
-isDead actor =
-    actor.health <= 0
-
-
 processRequest : Maybe Request -> Model -> ( Model, Maybe Msg )
 processRequest request model =
-    case request of
-        Just request ->
+    case ( Actor.isDead model.player, request ) of
+        ( _, Nothing ) ->
+            ( model, Nothing )
+
+        ( True, _ ) ->
+            ( model, Nothing )
+
+        ( False, Just request ) ->
             case
                 requestedAction
                     request
@@ -148,9 +144,6 @@ processRequest request model =
 
                 Attack perp victim ->
                     ( model, Just (Roll [ (Attack perp victim) ]) )
-
-        Nothing ->
-            ( model, Nothing )
 
 
 requestedAction : Request -> Actor -> Neighbours -> Action
