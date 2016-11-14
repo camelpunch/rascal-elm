@@ -4,6 +4,7 @@ import Application
 import Html.App
 import Model exposing (..)
 import Random
+import SharedStyles exposing (columnWidth)
 import Update exposing (update, subscriptions)
 import View exposing (view)
 
@@ -39,7 +40,7 @@ init =
 
 model : Model
 model =
-    { board = ( 30, 20 )
+    { board = ( columnWidth, 20 )
     , player =
         { coords = { x = 5, y = 5 }
         , health = 100

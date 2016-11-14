@@ -16,4 +16,8 @@ css =
             [ margin2 zero auto
             , color (rgb 255 255 255)
             ]
+        , (.) GameWidth
+            [ width (em columnWidth) ]
+        , (.) Central
+            [ textAlign center ]
         ]
