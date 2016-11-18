@@ -11,6 +11,8 @@ import Application exposing (cellOccupant)
 
 { id, class, classList } =
     SharedStyles.rascalNamespace
+
+
 view : Model -> Html msg
 view model =
     let
@@ -22,7 +24,7 @@ view model =
                 [ h1 [ class [ Central ] ] [ text "Game Over" ] ]
             else
                 [ table [ class [ GameWidth ] ]
-                    (List.map (row model) [0..height])
+                    (List.map (row model) (List.range 0 height))
                 , ul []
                     ((li []
                         [ text ("Player " ++ toString model.player.health) ]
@@ -49,7 +51,7 @@ row model row =
         tr []
             (List.map
                 (\col -> column col row model)
-                [0..width]
+                (List.range 0 width)
             )
 
 

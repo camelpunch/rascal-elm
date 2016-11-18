@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Application
-import Html.App
+import Html
 import Model exposing (..)
 import Random
 import SharedStyles exposing (columnWidth)
@@ -9,9 +9,9 @@ import Update exposing (update, subscriptions)
 import View exposing (view)
 
 
-main : Program Never
+main : Program Never Model Application.Msg
 main =
-    Html.App.program
+    Html.program
         { init = init
         , view = view
         , update = update

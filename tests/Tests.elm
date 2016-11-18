@@ -162,7 +162,7 @@ modelAfterMovements requests beforeState =
 
 dispatchRequest : Request -> Model -> Model
 dispatchRequest request state =
-    fst (Application.processRequest (Just request) state)
+    Tuple.first (Application.processRequest (Just request) state)
 
 
 movement : Fuzzer Request
